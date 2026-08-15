@@ -1,4 +1,6 @@
-﻿string current_directory = Directory.GetCurrentDirectory();
+﻿using System.Drawing;
+
+string current_directory = Directory.GetCurrentDirectory();
 string[] parts = [];
 
 string ResolvePath(string item)
@@ -24,7 +26,8 @@ while (true)
         
         foreach (string item in files)
         {
-            Console.WriteLine(item);
+            long fileSize = new FileInfo(item).Length;
+            Console.WriteLine($"{item} | {fileSize / 1000} KB");
         }
         string[] folders = Directory.GetDirectories(current_directory);
         foreach (string folder in folders)
