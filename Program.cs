@@ -85,15 +85,27 @@ while (true)
         }
         else if (Directory.Exists(path))
         {
-            Console.Write("Are you sure ? (y/n) > ");
-            user_input = Console.ReadLine()!;
-            if (user_input == "y")
+            string[] dir_files = Directory.GetFiles(path);
+            string[] dir_dirs = Directory.GetDirectories(path);
+            if (dir_files.Length > 0 || dir_dirs.Length > 0)
             {
-                Directory.Delete(path);
-                Console.WriteLine("Deleted folder.");
+                Console.WriteLine("Error : directory is not empty.");
+            }
+            else
+            {
+                Console.Write("Are you sure ? (y/n) > ");
+                user_input = Console.ReadLine()!;
+                if (user_input == "y")
+                {
+                    Directory.Delete(path);
+                    Console.WriteLine("Deleted folder.");
+                }   
             }
         }
-
+        else
+        {
+            Console.WriteLine("Error : the item you are trying to delete does not exist.");
+        }
     }
 
     else if (user_input.StartsWith("makefile "))
@@ -173,51 +185,43 @@ while (true)
         string target = ResolvePath(parts[2]);
         string final_target = Path.Combine(target, Path.GetFileName(path));
 
-
-        if (File.Exists(final_target))
+        if (File.Exists(path))
         {
-            Console.WriteLine("Error : a file with the same name already exists in the target directory.");
-        }
-        else if (File.Exists(path) == false)
-        {
-            if (Directory.Exists(path))
+            if (File.Exists(target) || File.Exists(final_target) || Directory.Exists(final_target))
             {
-                if (Directory.Exists(final_target))
-                {
-                    Console.WriteLine("Error : a folder with the same name already exists in the target directory.");
-                }
-                else if (Directory.Exists(target))
-                {
-                    Directory.Move(path, final_target);
-                    Console.WriteLine("Folder moved.");
-                }
-                else
-                {
-                    Directory.Move(path, target);
-                    Console.WriteLine("Folder moved.");
-                }
+                Console.WriteLine("Error : an item with the same name already exists in the target directory.");
             }
-            else
-            {
-                Console.WriteLine("Error : the file you are trying to move does not exist.");   
-            }
-        }
-        else if (Directory.Exists(target) == false)
-        {
-            if (File.Exists(target))
-            {
-                Console.WriteLine("Error : a file with the same name already exists in the target directory.");   
-            }
-            else if (File.Exists(path))
+            else if (Directory.Exists(target) == false)
             {
                 File.Move(path, target);
                 Console.WriteLine("File moved.");
             }
+            else
+            {
+                File.Move(path, final_target);
+                Console.WriteLine("File moved.");
+            }
+        }
+        else if (Directory.Exists(path))
+        {
+            if (File.Exists(target) || File.Exists(final_target) || Directory.Exists(final_target))
+            {
+                Console.WriteLine("Error : an item with the same name already exists in the target directory.");
+            }
+            else if (Directory.Exists(target) == false)
+            {
+                Directory.Move(path, target);
+                Console.WriteLine("Directory moved.");
+            }
+            else
+            {
+                Directory.Move(path, final_target);
+                Console.WriteLine("Folder moved.");   
+            }
         }
         else
         {
-            File.Move(path, final_target);
-            Console.WriteLine("File moved.");
+            Console.WriteLine("Error : the item you are trying to move does not exist.");
         }
     }
 
@@ -255,6 +259,10 @@ while (true)
                 Directory.Move(path, target);
                 Console.WriteLine("Folder renamed.");   
             }
+        }
+        else
+        {
+            Console.WriteLine("Error : the item you are trying to rename does not exist.");
         }
     }
 
